@@ -3,6 +3,8 @@ import React from 'react'
 
 export const dynamicParams = true ;
 
+
+// fetch pageData and use cache for ssi=no-cache or ssg=force-cache
 async function fetchPost(postslug){
     const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${postslug}`,
       {
@@ -13,6 +15,7 @@ async function fetchPost(postslug){
     return post;
 }
 
+// generate post
 async function pageDetail({params}) {
 
     const post = await fetchPost(params.postslug);
@@ -31,7 +34,7 @@ async function pageDetail({params}) {
 
 export default pageDetail;
 
-
+// get params by idpage
 export async function generateStaticParams(){
   const res =await fetch("https://jsonplaceholder.typicode.com/posts");
   const posts =await  res.json();
@@ -39,4 +42,10 @@ export async function generateStaticParams(){
   return posts.slice(0,4).map((post)=>({
     postslug : post.id.toString(),
   }))
+}
+
+// automatik generate metatag like :  titile and discription
+export async function generateMetadata({params}){
+  const post = await fetchPost(params.postslug);
+  return {title : post.title , discription : post.body};
 }
